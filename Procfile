@@ -1,0 +1,6 @@
+# Build command
+npm run build
+
+# Start command
+npm start
+

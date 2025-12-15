@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <rect width="500" height="500" fill="#1a1a1a"/>
+  <g transform="translate(250, 250)">
+    <!-- Camera body -->
+    <path d="M -120 -100 L -120 100 L 100 100 L 100 -100 Z" fill="#e0e0e0"/>
+    
+    <!-- Left reel -->
+    <circle cx="-65" cy="-40" r="35" fill="#1a1a1a"/>
+    <circle cx="-65" cy="-40" r="25" fill="#e0e0e0"/>
+    <circle cx="-65" cy="-40" r="8" fill="#1a1a1a"/>
+    <circle cx="-75" cy="-50" r="5" fill="#1a1a1a"/>
+    <circle cx="-55" cy="-50" r="5" fill="#1a1a1a"/>
+    <circle cx="-75" cy="-30" r="5" fill="#1a1a1a"/>
+    <circle cx="-55" cy="-30" r="5" fill="#1a1a1a"/>
+    
+    <!-- Right reel -->
+    <circle cx="40" cy="-40" r="45" fill="#1a1a1a"/>
+    <circle cx="40" cy="-40" r="32" fill="#e0e0e0"/>
+    <circle cx="40" cy="-40" r="10" fill="#1a1a1a"/>
+    <circle cx="28" cy="-53" r="6" fill="#1a1a1a"/>
+    <circle cx="52" cy="-53" r="6" fill="#1a1a1a"/>
+    <circle cx="28" cy="-27" r="6" fill="#1a1a1a"/>
+    <circle cx="52" cy="-27" r="6" fill="#1a1a1a"/>
+    <circle cx="40" cy="-40" r="6" fill="#1a1a1a"/>
+    
+    <!-- Lens mount -->
+    <polygon points="-25,15 -35,50 -5,50" fill="#1a1a1a"/>
+    
+    <!-- Projector part -->
+    <path d="M 100 -50 L 160 -70 L 160 10 L 100 -10 Z" fill="#e0e0e0"/>
+    
+    <!-- Film strip handle -->
+    <path d="M -120 120 L -150 130 L -45 165 L -35 155 Z" fill="#e0e0e0"/>
+    
+    <!-- Details -->
+    <circle cx="80" cy="70" r="8" fill="#1a1a1a"/>
+  </g>
+</svg>
+

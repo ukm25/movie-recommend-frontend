@@ -1,0 +1,22 @@
+services:
+  # Frontend Static Site
+  - type: static
+    name: movie-recommend-frontend
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://movie-recommend-api-1.onrender.com/api
