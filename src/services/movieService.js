@@ -78,12 +78,6 @@ class MovieService {
     }
   }
 
-  // Get watch history (kept for backward compatibility, but now uses API)
-  getWatchHistory() {
-    // This is now handled by API, but kept for compatibility
-    return [];
-  }
-
   // Add to watch history
   async addToWatchHistory(userId, movieId) {
     try {
@@ -112,12 +106,6 @@ class MovieService {
       console.error('Error fetching user genre preferences:', error);
       return [];
     }
-  }
-
-  // Get all users genre preferences (for admin)
-  getAllUsersGenrePreferences() {
-    // This is now handled by API, but kept for compatibility
-    return {};
   }
 
   // Get recommendations for a user

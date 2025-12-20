@@ -33,7 +33,7 @@ const MainLayout = ({ children }) => {
           </div>
           {currentUser && (
             <div className="header-user">
-              <span className="user-name">{currentUser.name}</span>
+              <span className="user-name">{currentUser.username}</span>
               <span className="user-role">({currentUser.role})</span>
               <button onClick={logout} className="btn-logout">
                 Logout
