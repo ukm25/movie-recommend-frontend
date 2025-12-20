@@ -53,9 +53,14 @@ class MovieService {
   }
 
   // Get all movies (with pagination)
-  async getAllMovies(limit = 20, offset = 0) {
+  async getAllMovies(limit = 20, offset = 0, userId = null) {
     try {
-      const response = await fetch(`${this.apiUrl}/movies?limit=${limit}&offset=${offset}`, {
+      let url = `${this.apiUrl}/movies?limit=${limit}&offset=${offset}`;
+      if (userId) {
+        url += `&userId=${userId}`;
+      }
+      
+      const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -18,31 +18,61 @@ const ViewerMoviesPage = () => {
   const [offset, setOffset] = useState(0);
   const observerTarget = useRef(null);
   const limit = 20;
+  const isInitialMount = useRef(true);
 
-  // Fetch initial data
+  // Fetch initial movies data (on mount and when user changes)
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
+      // Only fetch once on initial mount, or when user changes
+      if (!isInitialMount.current && !currentUser) return;
+      
       try {
         setLoading(true);
-        const result = await movieService.getAllMovies(limit, 0);
+        const userId = currentUser?.id || null;
+        const result = await movieService.getAllMovies(limit, 0, userId);
         setMovies(result.movies);
         setHasMore(result.hasMore);
         setOffset(result.movies.length);
 
-        const hot = await movieService.getHotMovies();
-        setHotMovies(hot);
+        // Update watchedMovies from API response
+        const watchedSet = new Set();
+        result.movies.forEach(movie => {
+          if (movie.isWatched) {
+            watchedSet.add(movie.id);
+          }
+        });
+        setWatchedMovies(watchedSet);
 
-        if (currentUser) {
-          const history = await movieService.getUserWatchHistory(currentUser.id);
-          setWatchedMovies(new Set(history.map(h => h.movieId || h.movie_id)));
+        // Only fetch hot movies on initial mount
+        if (isInitialMount.current) {
+          const hot = await movieService.getHotMovies();
+          setHotMovies(hot);
+          isInitialMount.current = false;
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching initial data:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchInitialData();
+  }, [currentUser?.id]); // Re-fetch when user ID changes
+
+  // Fetch watch history when user changes
+  useEffect(() => {
+    const fetchWatchHistory = async () => {
+      if (currentUser) {
+        try {
+          const history = await movieService.getUserWatchHistory(currentUser.id);
+          setWatchedMovies(new Set(history.map(h => h.movieId || h.movie_id)));
+        } catch (error) {
+          console.error('Error fetching watch history:', error);
+        }
+      } else {
+        setWatchedMovies(new Set());
+      }
+    };
+    fetchWatchHistory();
   }, [currentUser]);
 
   // Load more movies
@@ -51,12 +81,28 @@ const ViewerMoviesPage = () => {
 
     try {
       setLoading(true);
-      const result = await movieService.getAllMovies(limit, offset);
+      // Use current offset from state to ensure we get the next batch
+      const currentOffset = offset;
+      const userId = currentUser?.id || null;
+      const result = await movieService.getAllMovies(limit, currentOffset, userId);
       
       if (result.movies.length > 0) {
+        // Append new movies to existing list
         setMovies(prev => [...prev, ...result.movies]);
         setHasMore(result.hasMore);
-        setOffset(prev => prev + result.movies.length);
+        // Update offset for next load
+        setOffset(currentOffset + result.movies.length);
+        
+        // Update watchedMovies from new movies
+        setWatchedMovies(prev => {
+          const newSet = new Set(prev);
+          result.movies.forEach(movie => {
+            if (movie.isWatched) {
+              newSet.add(movie.id);
+            }
+          });
+          return newSet;
+        });
       } else {
         setHasMore(false);
       }
@@ -66,7 +112,7 @@ const ViewerMoviesPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, offset]);
+  }, [loading, hasMore, offset, limit, currentUser]);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
