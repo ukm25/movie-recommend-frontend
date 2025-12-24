@@ -58,7 +58,7 @@ const HotMoviesSlideshow = ({ movies }) => {
                 <h2 className="slide-movie-title">{movie.title}</h2>
                 <div className="slide-movie-details">
                   <span className="slide-year">{movie.year}</span>
-                  <span className="slide-rating">⭐ {movie.rating}/10</span>
+                  <span className="slide-rating">⭐ {movie.rating}/5</span>
                 </div>
                 <div className="slide-genres">
                   {movie.genres.map((genre, idx) => (

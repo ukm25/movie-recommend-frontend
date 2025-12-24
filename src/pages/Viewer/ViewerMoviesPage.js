@@ -11,6 +11,7 @@ const ViewerMoviesPage = () => {
   const [movies, setMovies] = useState([]);
   const [hotMovies, setHotMovies] = useState([]);
   const [watchedMovies, setWatchedMovies] = useState(new Set());
+  const [userRatings, setUserRatings] = useState(new Map()); // Map<movieId, rating>
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,8 +46,8 @@ const ViewerMoviesPage = () => {
 
         // Only fetch hot movies on initial mount
         if (isInitialMount.current) {
-          const hot = await movieService.getHotMovies();
-          setHotMovies(hot);
+        const hot = await movieService.getHotMovies();
+        setHotMovies(hot);
           isInitialMount.current = false;
         }
       } catch (error) {
@@ -137,10 +138,22 @@ const ViewerMoviesPage = () => {
     };
   }, [loadMoreMovies, hasMore, loading]);
 
-  const handleMovieClick = (movie, e) => {
+  const handleMovieClick = async (movie, e) => {
     e.stopPropagation();
     setSelectedMovie(movie);
     setIsModalOpen(true);
+    
+    // Fetch user rating for this movie
+    if (currentUser) {
+      try {
+        const rating = await movieService.getUserRating(currentUser.id, movie.id);
+        if (rating !== null) {
+          setUserRatings(prev => new Map(prev).set(movie.id, rating));
+        }
+      } catch (error) {
+        console.error('Error fetching user rating:', error);
+      }
+    }
   };
 
   const handleMarkAsWatched = async (movieId) => {
@@ -157,6 +170,19 @@ const ViewerMoviesPage = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedMovie(null);
+  };
+
+  const handleRateMovie = async (rating) => {
+    if (!currentUser || !selectedMovie) return;
+    
+    try {
+      await movieService.addOrUpdateRating(currentUser.id, selectedMovie.id, rating);
+      setUserRatings(prev => new Map(prev).set(selectedMovie.id, rating));
+      alert('Đã đánh giá phim thành công');
+    } catch (error) {
+      console.error('Error rating movie:', error);
+      alert('Có lỗi xảy ra khi đánh giá phim. Vui lòng thử lại.');
+    }
   };
 
   return (
@@ -190,7 +216,7 @@ const ViewerMoviesPage = () => {
                   </div>
                   <div className="movie-year">{movie.year}</div>
                   <div className="movie-rating">
-                    ⭐ {movie.rating || 0}/10
+                    ⭐ {movie.rating || 0}/5
                   </div>
                   {isWatched && (
                     <div className="watched-badge">✓ Watched</div>
@@ -221,6 +247,9 @@ const ViewerMoviesPage = () => {
           onClose={handleCloseModal}
           onMarkAsWatched={handleMarkAsWatched}
           isWatched={selectedMovie ? watchedMovies.has(selectedMovie.id) : false}
+          userRating={selectedMovie ? userRatings.get(selectedMovie.id) : null}
+          onRateMovie={handleRateMovie}
+          currentUser={currentUser}
         />
       </div>
     </MainLayout>

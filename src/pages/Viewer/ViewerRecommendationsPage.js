@@ -57,7 +57,7 @@ const ViewerRecommendationsPage = () => {
                 </div>
                 <div className="movie-year">{movie.year}</div>
                 <div className="movie-rating">
-                  ⭐ {movie.rating || 0}/10
+                  ⭐ {movie.rating || 0}/5
                 </div>
               </div>
             </div>

@@ -1,7 +1,8 @@
 import React from 'react';
+import StarRating from './StarRating';
 import '../styles/MovieDetailModal.css';
 
-const MovieDetailModal = ({ movie, isOpen, onClose, onMarkAsWatched, isWatched }) => {
+const MovieDetailModal = ({ movie, isOpen, onClose, onMarkAsWatched, isWatched, userRating, onRateMovie, currentUser }) => {
   if (!isOpen || !movie) return null;
 
   const handleBackdropClick = (e) => {
@@ -28,11 +29,23 @@ const MovieDetailModal = ({ movie, isOpen, onClose, onMarkAsWatched, isWatched }
           <h2 className="modal-title">{movie.title}</h2>
           <div className="modal-meta">
             <span className="modal-year">{movie.year}</span>
-            <span className="modal-rating">⭐ {movie.rating}/10</span>
+            <span className="modal-rating">⭐ {movie.rating}/5</span>
           </div>
         </div>
 
         <div className="modal-body">
+          {/* User Rating Section - Placed at the top */}
+          {currentUser && onRateMovie && (
+            <div className="modal-user-rating">
+              <StarRating
+                value={userRating}
+                onChange={onRateMovie}
+                readOnly={false}
+                maxStars={5}
+              />
+            </div>
+          )}
+
           <div className="modal-genres">
             {(movie.genres || []).map((genre, index) => (
               <span key={index} className="modal-genre-badge">{genre}</span>
@@ -42,7 +55,7 @@ const MovieDetailModal = ({ movie, isOpen, onClose, onMarkAsWatched, isWatched }
           <div className="modal-description">
             <h3>Description</h3>
             <p>
-              {movie.description || `${movie.title} is a critically acclaimed ${(movie.genres && movie.genres[0]) ? movie.genres[0].toLowerCase() : 'film'} film released in ${movie.year}. With an impressive rating of ${movie.rating || 0}/10, this movie has captivated audiences worldwide with its compelling storytelling and outstanding performances.`}
+              {movie.description || `${movie.title} is a critically acclaimed ${(movie.genres && movie.genres[0]) ? movie.genres[0].toLowerCase() : 'film'} film released in ${movie.year}. With an impressive rating of ${movie.rating || 0}/5, this movie has captivated audiences worldwide with its compelling storytelling and outstanding performances.`}
             </p>
           </div>
 
@@ -53,7 +66,7 @@ const MovieDetailModal = ({ movie, isOpen, onClose, onMarkAsWatched, isWatched }
             </div>
             <div className="stat-item">
               <span className="stat-label">Rating</span>
-              <span className="stat-value">{movie.rating}/10</span>
+              <span className="stat-value">{movie.rating}/5</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Genres</span>
