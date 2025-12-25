@@ -18,6 +18,8 @@ const ViewerMoviesPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const observerTarget = useRef(null);
+  const scrollPositionRef = useRef(null);
+  const shouldRestoreScroll = useRef(false);
   const limit = 20;
   const isInitialMount = useRef(true);
 
@@ -46,8 +48,8 @@ const ViewerMoviesPage = () => {
 
         // Only fetch hot movies on initial mount
         if (isInitialMount.current) {
-        const hot = await movieService.getHotMovies();
-        setHotMovies(hot);
+          const hot = await movieService.getHotMovies();
+          setHotMovies(hot);
           isInitialMount.current = false;
         }
       } catch (error) {
@@ -82,6 +84,12 @@ const ViewerMoviesPage = () => {
 
     try {
       setLoading(true);
+      // Save current scroll position before updating state (only when appending, not initial load)
+      if (movies.length > 0) {
+        scrollPositionRef.current = window.pageYOffset || document.documentElement.scrollTop;
+        shouldRestoreScroll.current = true;
+      }
+      
       // Use current offset from state to ensure we get the next batch
       const currentOffset = offset;
       const userId = currentUser?.id || null;
@@ -113,7 +121,20 @@ const ViewerMoviesPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, offset, limit, currentUser]);
+  }, [loading, hasMore, offset, limit, currentUser, movies.length]);
+
+  // Restore scroll position after movies are appended
+  useEffect(() => {
+    if (shouldRestoreScroll.current && scrollPositionRef.current !== null && movies.length > 0) {
+      // Use setTimeout to ensure DOM has updated
+      const timer = setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+        scrollPositionRef.current = null;
+        shouldRestoreScroll.current = false;
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [movies.length]);
 
   // Intersection Observer for lazy loading
   useEffect(() => {

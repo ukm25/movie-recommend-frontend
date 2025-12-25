@@ -34,15 +34,28 @@ A React-based movie recommendation frontend application with role-based access c
 
 Render will automatically deploy your app!
 
-### Environment
+### Environment Variables
 
-No environment variables needed - all data stored in browser localStorage.
+**For Local Development:**
+1. Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. File `.env.local` is automatically ignored by git
+3. Default local config: `REACT_APP_API_URL=http://localhost:5001/api`
+
+**For Production (Render):**
+- Environment variables are configured in `render.yaml`
+- Production API URL: `https://movie-recommend-api-1.onrender.com/api`
 
 ## Local Development
 
 ```bash
 # Install dependencies
 npm install
+
+# Create .env.local for local development (if not exists)
+cp .env.example .env.local
 
 # Start development server
 npm start

@@ -113,13 +113,29 @@ class MovieService {
     }
   }
 
-  // Get recommendations for a user
-  async getRecommendations(userId, limit = 10) {
+  // Get recommendations for a user (with pagination)
+  async getRecommendations(userId, limit = 10, offset = 0) {
     try {
-      return await this.fetchAPI(`/recommendations/user/${userId}?limit=${limit}`);
+      const response = await fetch(`${this.apiUrl}/recommendations/user/${userId}?limit=${limit}&offset=${offset}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return {
+        movies: data.success ? data.data : [],
+        hasMore: data.hasMore || false,
+        limit: data.limit || limit,
+        offset: data.offset || offset
+      };
     } catch (error) {
       console.error('Error fetching recommendations:', error);
-      return [];
+      return { movies: [], hasMore: false, limit, offset };
     }
   }
 
